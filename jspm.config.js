@@ -108,6 +108,7 @@ SystemJS.config({
   ],
   map: {
     "assert": "github:jspm/nodelibs-assert@0.2.0-alpha",
+    "bootstrap": "github:twbs/bootstrap@4.0.0-alpha.4",
     "buffer": "github:jspm/nodelibs-buffer@0.2.0-alpha",
     "child_process": "github:jspm/nodelibs-child_process@0.2.0-alpha",
     "constants": "github:jspm/nodelibs-constants@0.2.0-alpha",
@@ -420,6 +421,12 @@ SystemJS.config({
     "npm:font-awesome@4.6.3": {
       "map": {
         "css": "github:systemjs/plugin-css@0.1.29"
+      }
+    },
+    "github:twbs/bootstrap@4.0.0-alpha.4": {
+      "map": {
+        "jquery": "npm:jquery@2.2.4",
+        "tether": "github:HubSpot/tether@1.3.7"
       }
     }
   }

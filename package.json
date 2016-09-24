@@ -3,6 +3,7 @@
     "name": "app",
     "main": "index.jsx",
     "dependencies": {
+      "bootstrap": "github:twbs/bootstrap@4.0.0-alpha.4",
       "font-awesome": "npm:font-awesome@^4.6.3",
       "react-dom": "npm:react-dom@^15.3.2"
     },
@@ -34,6 +35,49 @@
       "zlib": "github:jspm/nodelibs-zlib@^0.2.0-alpha"
     },
     "overrides": {
+      "github:HubSpot/tether@1.3.7": {
+        "main": "js/tether",
+        "directories": {
+          "lib": "dist"
+        },
+        "meta": {
+          "js/tether.js": {
+            "exports": "Tether",
+            "format": "global"
+          }
+        }
+      },
+      "github:twbs/bootstrap@4.0.0-alpha.4": {
+        "files": null,
+        "ignore": [
+          "dist/js/npm"
+        ],
+        "directories": {
+          "lib": ""
+        },
+        "dependencies": {
+          "jquery": "2",
+          "tether": "github:HubSpot/tether@^1.1.1"
+        },
+        "meta": {
+          "dist/js/bootstrap.js": {
+            "deps": [
+              "jquery",
+              "tether"
+            ],
+            "exports": "$",
+            "format": "global"
+          },
+          "js/bootstrap.js": {
+            "deps": [
+              "jquery",
+              "tether"
+            ],
+            "exports": "$",
+            "format": "global"
+          }
+        }
+      },
       "npm:browserify-zlib@0.1.4": {
         "dependencies": {
           "readable-stream": "^2.0.2",
@@ -55,6 +99,9 @@
         "ignore": [
           "test.js"
         ]
+      },
+      "npm:jquery@2.2.4": {
+        "format": "amd"
       },
       "npm:lodash@4.16.1": {
         "map": {
