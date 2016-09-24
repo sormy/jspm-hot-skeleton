@@ -1,7 +1,7 @@
 {
   "jspm": {
     "name": "app",
-    "main": "app.js",
+    "main": "index.jsx",
     "dependencies": {
       "react-dom": "npm:react-dom@^15.3.2"
     },
