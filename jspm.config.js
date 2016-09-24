@@ -6,7 +6,7 @@ SystemJS.config({
   },
   meta: {
     "*.css": {
-      "loader": "plugin-css"
+      "loader": "css"
     }
   },
   transpiler: "plugin-babel",
@@ -29,8 +29,8 @@ SystemJS.config({
   devConfig: {
     "map": {
       "plugin-babel": "npm:systemjs-plugin-babel@0.0.15",
-      "plugin-css": "github:systemjs/plugin-css@0.1.29",
-      "babel-preset-react": "npm:babel-preset-react@6.11.1"
+      "babel-preset-react": "npm:babel-preset-react@6.11.1",
+      "css": "github:systemjs/plugin-css@0.1.29"
     },
     "packages": {
       "npm:babel-preset-react@6.11.1": {
@@ -114,6 +114,7 @@ SystemJS.config({
     "crypto": "github:jspm/nodelibs-crypto@0.2.0-alpha",
     "domain": "github:jspm/nodelibs-domain@0.2.0-alpha",
     "events": "github:jspm/nodelibs-events@0.2.0-alpha",
+    "font-awesome": "npm:font-awesome@4.6.3",
     "fs": "github:jspm/nodelibs-fs@0.2.0-alpha",
     "http": "github:jspm/nodelibs-http@0.2.0-alpha",
     "https": "github:jspm/nodelibs-https@0.2.0-alpha",
@@ -414,6 +415,11 @@ SystemJS.config({
         "inherits": "npm:inherits@2.0.3",
         "bn.js": "npm:bn.js@4.11.6",
         "minimalistic-assert": "npm:minimalistic-assert@1.0.0"
+      }
+    },
+    "npm:font-awesome@4.6.3": {
+      "map": {
+        "css": "github:systemjs/plugin-css@0.1.29"
       }
     }
   }
