@@ -5,13 +5,13 @@ export default class App extends React.Component {
     return (
       <div>
         <div>Hello, World!</div>
+        <div>Open Sans Font</div>
         <div>
           Font Awesome: <i className="fa fa-fort-awesome" aria-hidden="true"></i>
         </div>
         <div>
-          <button className="btn btn-primary">
-            Bootstrap Primary Button (should be red if theme overrides are working well)
-          </button>
+          <button className="btn btn-primary">Bootstrap Primary Button</button>
+          (should be red if theme overrides are working well)
         </div>
       </div>
     );

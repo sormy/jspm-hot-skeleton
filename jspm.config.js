@@ -5,6 +5,9 @@ SystemJS.config({
     "app/": "src/"
   },
   meta: {
+    "*.jsx": {
+      "loader": "plugin-babel"
+    },
     "*.css": {
       "loader": "css"
     },
@@ -24,12 +27,7 @@ SystemJS.config({
   packages: {
     "app": {
       "main": "index",
-      "defaultExtension": "jsx",
-      "meta": {
-        "*.jsx": {
-          "loader": "plugin-babel"
-        }
-      }
+      "defaultExtension": "jsx"
     }
   },
   devConfig: {
