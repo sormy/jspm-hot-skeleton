@@ -5,7 +5,9 @@
 - React
 - Babel
 - FontAwesome
+- Open Sans
 - Bootstrap 4.x + SCSS + customization
+- CSS/SCSS
 
 ## From Scratch ##
 
