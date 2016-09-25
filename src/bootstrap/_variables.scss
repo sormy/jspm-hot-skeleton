@@ -1,0 +1,9 @@
+// variables in stock variables.scss defined with !default so to alter them
+// we just need to define needed variables here
+
+// this file could be imported into any application component's scss file
+// to reuse theme variables
+
+$brand-primary: #900020;
+
+@import "jspm:bootstrap/scss/variables";

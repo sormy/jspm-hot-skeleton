@@ -10,7 +10,8 @@
     "devDependencies": {
       "babel-preset-react": "npm:babel-preset-react@^6.11.1",
       "css": "github:systemjs/plugin-css@^0.1.29",
-      "plugin-babel": "npm:systemjs-plugin-babel@^0.0.15"
+      "plugin-babel": "npm:systemjs-plugin-babel@^0.0.15",
+      "sass": "github:mobilexag/plugin-sass@^0.4.6"
     },
     "peerDependencies": {
       "assert": "github:jspm/nodelibs-assert@^0.2.0-alpha",
@@ -60,23 +61,16 @@
           "tether": "github:HubSpot/tether@^1.1.1"
         },
         "meta": {
-          "dist/js/bootstrap.js": {
+          "js/src/*.js": {
             "deps": [
               "jquery",
               "tether"
             ],
-            "exports": "$",
-            "format": "global"
-          },
-          "js/bootstrap.js": {
-            "deps": [
-              "jquery",
-              "tether"
-            ],
-            "exports": "$",
-            "format": "global"
+            "exports": "$"
           }
-        }
+        },
+        "format": "detect",
+        "map": {}
       },
       "npm:browserify-zlib@0.1.4": {
         "dependencies": {
@@ -107,6 +101,16 @@
         "map": {
           "buffer": "@empty",
           "process": "@empty"
+        }
+      },
+      "npm:sass.js@0.9.12": {
+        "map": {
+          "ws": "@empty"
+        },
+        "meta": {
+          "dist/sass.worker.js": {
+            "format": "global"
+          }
         }
       }
     }

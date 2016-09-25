@@ -68,13 +68,12 @@ jspm install bootstrap=github:twbs/bootstrap@4.0.0-alpha.4 -o '{
     "lib": ""
   },
   "meta": {
-    "dist/js/bootstrap.js": {
+    "js/src/*.js": {
       "deps": [
         "jquery",
         "tether"
       ],
-      "exports": "$",
-      "format": "global"
+      "exports": "$"
     }
   }
 }'

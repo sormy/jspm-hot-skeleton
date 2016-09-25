@@ -1,0 +1,51 @@
+// based on bootstrap/scss/bootstrap.scss
+
+// comment import for modules you want to disable
+// wrap import for modules you want alter
+
+// Core variables and mixins
+@import "variables";
+@import "jspm:bootstrap/scss/mixins";
+
+// Reset and dependencies
+@import "jspm:bootstrap/scss/normalize";
+@import "jspm:bootstrap/scss/print";
+
+// Core CSS
+@import "jspm:bootstrap/scss/reboot";
+@import "jspm:bootstrap/scss/type";
+@import "jspm:bootstrap/scss/images";
+@import "jspm:bootstrap/scss/code";
+@import "jspm:bootstrap/scss/grid";
+@import "jspm:bootstrap/scss/tables";
+@import "jspm:bootstrap/scss/forms";
+@import "jspm:bootstrap/scss/buttons";
+
+// Components
+@import "jspm:bootstrap/scss/animation";
+@import "jspm:bootstrap/scss/dropdown";
+@import "jspm:bootstrap/scss/button-group";
+@import "jspm:bootstrap/scss/input-group";
+@import "jspm:bootstrap/scss/custom-forms";
+@import "jspm:bootstrap/scss/nav";
+@import "jspm:bootstrap/scss/navbar";
+@import "jspm:bootstrap/scss/card";
+@import "jspm:bootstrap/scss/breadcrumb";
+@import "jspm:bootstrap/scss/pagination";
+@import "jspm:bootstrap/scss/tags";
+@import "jspm:bootstrap/scss/jumbotron";
+@import "jspm:bootstrap/scss/alert";
+@import "jspm:bootstrap/scss/progress";
+@import "jspm:bootstrap/scss/media";
+@import "jspm:bootstrap/scss/list-group";
+@import "jspm:bootstrap/scss/responsive-embed";
+@import "jspm:bootstrap/scss/close";
+
+// Components w/ JavaScript
+@import "jspm:bootstrap/scss/modal";
+@import "jspm:bootstrap/scss/tooltip";
+@import "jspm:bootstrap/scss/popover";
+@import "jspm:bootstrap/scss/carousel";
+
+// Utility classes
+@import "jspm:bootstrap/scss/utilities";

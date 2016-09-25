@@ -7,7 +7,18 @@ SystemJS.config({
   meta: {
     "*.css": {
       "loader": "css"
+    },
+    "*.scss": {
+      "loader": "sass"
     }
+  },
+  babelOptions: {
+    "presets": [
+      "babel-preset-react"
+    ]
+  },
+  sassPluginOptions: {
+    "autoprefixer": true
   },
   transpiler: "plugin-babel",
   packages: {
@@ -16,12 +27,7 @@ SystemJS.config({
       "defaultExtension": "jsx",
       "meta": {
         "*.jsx": {
-          "loader": "plugin-babel",
-          "babelOptions": {
-            "presets": [
-              "babel-preset-react"
-            ]
-          }
+          "loader": "plugin-babel"
         }
       }
     }
@@ -30,7 +36,8 @@ SystemJS.config({
     "map": {
       "plugin-babel": "npm:systemjs-plugin-babel@0.0.15",
       "babel-preset-react": "npm:babel-preset-react@6.11.1",
-      "css": "github:systemjs/plugin-css@0.1.29"
+      "css": "github:systemjs/plugin-css@0.1.29",
+      "sass": "github:mobilexag/plugin-sass@0.4.6"
     },
     "packages": {
       "npm:babel-preset-react@6.11.1": {
@@ -94,6 +101,61 @@ SystemJS.config({
           "esutils": "npm:esutils@2.0.2",
           "lodash": "npm:lodash@4.16.1",
           "to-fast-properties": "npm:to-fast-properties@1.0.2"
+        }
+      },
+      "github:mobilexag/plugin-sass@0.4.6": {
+        "map": {
+          "path": "github:jspm/nodelibs-path@0.1.0",
+          "url": "github:jspm/nodelibs-url@0.1.0",
+          "fs": "github:jspm/nodelibs-fs@0.1.2",
+          "reqwest": "github:ded/reqwest@2.0.5",
+          "lodash": "npm:lodash@4.16.1",
+          "autoprefixer": "npm:autoprefixer@6.4.1",
+          "postcss": "npm:postcss@5.2.0",
+          "sass.js": "npm:sass.js@0.9.12"
+        }
+      },
+      "npm:autoprefixer@6.4.1": {
+        "map": {
+          "postcss": "npm:postcss@5.2.0",
+          "normalize-range": "npm:normalize-range@0.1.2",
+          "num2fraction": "npm:num2fraction@1.2.2",
+          "postcss-value-parser": "npm:postcss-value-parser@3.3.0",
+          "browserslist": "npm:browserslist@1.3.6",
+          "caniuse-db": "npm:caniuse-db@1.0.30000539"
+        }
+      },
+      "github:jspm/nodelibs-url@0.1.0": {
+        "map": {
+          "url": "npm:url@0.10.3"
+        }
+      },
+      "github:jspm/nodelibs-path@0.1.0": {
+        "map": {
+          "path-browserify": "npm:path-browserify@0.0.0"
+        }
+      },
+      "npm:postcss@5.2.0": {
+        "map": {
+          "source-map": "npm:source-map@0.5.6",
+          "js-base64": "npm:js-base64@2.1.9",
+          "supports-color": "npm:supports-color@3.1.2"
+        }
+      },
+      "npm:url@0.10.3": {
+        "map": {
+          "punycode": "npm:punycode@1.3.2",
+          "querystring": "npm:querystring@0.2.0"
+        }
+      },
+      "npm:browserslist@1.3.6": {
+        "map": {
+          "caniuse-db": "npm:caniuse-db@1.0.30000539"
+        }
+      },
+      "npm:supports-color@3.1.2": {
+        "map": {
+          "has-flag": "npm:has-flag@1.0.0"
         }
       }
     }
