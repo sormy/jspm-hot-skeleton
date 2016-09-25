@@ -181,6 +181,7 @@ SystemJS.config({
     "fs": "github:jspm/nodelibs-fs@0.2.0-alpha",
     "http": "github:jspm/nodelibs-http@0.2.0-alpha",
     "https": "github:jspm/nodelibs-https@0.2.0-alpha",
+    "open-sans": "github:FontFaceKit/open-sans@1.4.2",
     "os": "github:jspm/nodelibs-os@0.2.0-alpha",
     "path": "github:jspm/nodelibs-path@0.2.0-alpha",
     "process": "github:jspm/nodelibs-process@0.2.0-alpha",
@@ -489,6 +490,11 @@ SystemJS.config({
       "map": {
         "jquery": "npm:jquery@2.2.4",
         "tether": "github:HubSpot/tether@1.3.7"
+      }
+    },
+    "github:FontFaceKit/open-sans@1.4.2": {
+      "map": {
+        "css": "github:systemjs/plugin-css@0.1.29"
       }
     }
   }

@@ -15,6 +15,10 @@
 jspm init
 ```
 
+- create /index.html
+- fix /jspm.config.js
+- create /src sample application
+
 ### Install CSS plugin ###
 
 ```shell
@@ -77,4 +81,10 @@ jspm install bootstrap=github:twbs/bootstrap@4.0.0-alpha.4 -o '{
     }
   }
 }'
+```
+
+### Install Open Sans ###
+
+```shell
+jspm install open-sans=github:FontFaceKit/open-sans
 ```

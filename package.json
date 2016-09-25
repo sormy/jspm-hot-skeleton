@@ -5,6 +5,7 @@
     "dependencies": {
       "bootstrap": "github:twbs/bootstrap@4.0.0-alpha.4",
       "font-awesome": "npm:font-awesome@^4.6.3",
+      "open-sans": "github:FontFaceKit/open-sans@^1.4.2",
       "react-dom": "npm:react-dom@^15.3.2"
     },
     "devDependencies": {
@@ -36,6 +37,13 @@
       "zlib": "github:jspm/nodelibs-zlib@^0.2.0-alpha"
     },
     "overrides": {
+      "github:FontFaceKit/open-sans@1.4.2": {
+        "main": "open-sans.css!",
+        "dependencies": {
+          "css": "^0.1.5"
+        },
+        "registry": "jspm"
+      },
       "github:HubSpot/tether@1.3.7": {
         "main": "js/tether",
         "directories": {
