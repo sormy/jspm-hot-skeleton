@@ -2,6 +2,7 @@
 
 ## Features ##
 
+- JSPM 0.19.x
 - React
 - Babel
 - FontAwesome
