@@ -1,5 +1,11 @@
 # JSPM Skeleton #
 
+## TODO ##
+
+- Source Maps
+- fix SCSS assets path resolve
+- fix react hot reloader deps
+
 ## Features ##
 
 - JSPM 0.19.x
@@ -58,7 +64,29 @@ SystemJS.config({
 ```
 
 ```shell
-jspm install react
+jspm install react react-dom
+```
+
+### Install React Hot Reloader ###
+
+Reloading of react components works out from the box with bs-jspm-reloader, but
+state is not preserved.
+
+You need to install 3rd party library to preserve state on reload.
+
+Based on original react-hot-loader package.json.
+
+```shell
+jspm install npm:react-hot-loader@^3.0.0-beta.5 --dev -o '{
+  "dependencies": {
+    "global": "^4.3.0",
+    "babel-template": "^6.7.0",
+    "react": "^15.0.2",
+    "react-proxy": "^3.0.0-alpha.0",
+    "react-deep-force-update": "^2.0.1",
+    "redbox-react": "^1.2.5",
+  }
+}'
 ```
 
 ### Install Font-Awesome ###

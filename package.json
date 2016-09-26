@@ -12,6 +12,7 @@
       "babel-preset-react": "npm:babel-preset-react@^6.11.1",
       "css": "github:systemjs/plugin-css@^0.1.29",
       "plugin-babel": "npm:systemjs-plugin-babel@^0.0.15",
+      "react-hot-loader": "npm:react-hot-loader@^3.0.0-beta.5",
       "sass": "github:mobilexag/plugin-sass@^0.4.6"
     },
     "peerDependencies": {
@@ -89,6 +90,23 @@
           "_stream_transform": "readable-stream/transform"
         }
       },
+      "npm:debug@2.2.0": {
+        "main": "browser.js",
+        "jspmNodeConversion": false,
+        "format": "cjs",
+        "map": {
+          "./browser.js": {
+            "node": "./node.js"
+          },
+          "./node.js": {
+            "browser": "./browser.js"
+          },
+          "fs": "@node/fs",
+          "net": "@node/net",
+          "tty": "@node/tty",
+          "util": "@node/util"
+        }
+      },
       "npm:font-awesome@4.6.3": {
         "main": "css/font-awesome.css!",
         "jspmNodeConversion": false,
@@ -111,6 +129,20 @@
           "process": "@empty"
         }
       },
+      "npm:ms@0.7.1": {
+        "jspmNodeConversion": false,
+        "format": "cjs"
+      },
+      "npm:react-hot-loader@3.0.0-beta.5": {
+        "dependencies": {
+          "babel-template": "^6.7.0",
+          "react": "^15.0.2",
+          "react-proxy": "^3.0.0-alpha.0",
+          "global": "^4.3.0",
+          "react-deep-force-update": "^2.0.1",
+          "redbox-react": "^1.2.5"
+        }
+      },
       "npm:sass.js@0.9.12": {
         "map": {
           "ws": "@empty"
@@ -122,5 +154,8 @@
         }
       }
     }
+  },
+  "devDependencies": {
+    "browser-sync": "^2.16.0"
   }
 }

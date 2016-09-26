@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Counter from './Counter';
+
 export default class App extends React.Component {
   render() {
     return (
@@ -12,6 +14,9 @@ export default class App extends React.Component {
         <div>
           <button className="btn btn-primary">Bootstrap Primary Button</button>
           (should be red if theme overrides are working well)
+        </div>
+        <div>
+          Stateful component: <Counter />
         </div>
       </div>
     );
