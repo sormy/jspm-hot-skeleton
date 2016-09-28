@@ -5,6 +5,7 @@
 - Source Maps
 - fix SCSS assets path resolve
 - fix react hot reloader deps
+- react redbox?
 
 ## Features ##
 

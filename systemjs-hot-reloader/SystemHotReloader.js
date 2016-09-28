@@ -1,39 +1,64 @@
 export default class SystemHotReloader {
   constructor(loader) {
-    if (!loader) {
-      throw 'Unable to instantiate SystemReloader without SystemJS instance';
-    }
+    this.loader = loader || SystemJS || System;
+    this.logLevel = 3;  // 0 - none, 1 - error, 2 - info, 3 - debug
+    this.logger = this.createLogger('HMR');
 
-    this.loader = loader;
-    this.debug = true;
+    if (!loader) {
+      throw 'Unable to instantiate SystemJS Hot Reloader without SystemJS';
+    }
   }
 
-  log(message) {
-    if (this.debug) {
-      console.log(message)
+  createLogger(prefix) {
+    return {
+      debug: (message) => {
+        if (this.logLevel >= 3 && console && console.debug) {
+          console.debug(`[${prefix}] ${message}`);
+        }
+      },
+      info: (message) => {
+        if (this.logLevel >= 2 && console && console.info) {
+          console.info(`[${prefix}] ${message}`);
+        }
+      },
+      error: (message) => {
+        if (this.logLevel >= 1 && console && console.warn) {
+          console.warn(`[${prefix}] ${message}`);
+        }
+      }
     }
   }
 
   reloadPath(path) {
-    this.log(`Reloading file: ${path}`);
+    this.logger.debug(`File reload: ${path}`);
     return this.reloadModule(this.loader.normalizeSync(path));
   }
 
+  stripUrlBase(url) {
+    if (url.startsWith(this.loader.baseURL)) {
+      return './' + url.substr(this.loader.baseURL.length).replace(/!.*$/, '');
+    }
+    return url.replace(/!.*$/, '');
+  }
+
   reloadModule(moduleName) {
-    this.log(`Reloading module: ${moduleName}`);
+    let startTime = performance.now();
+
+    this.logger.info(`Module reload: ${this.stripUrlBase(moduleName)}`);
 
     if (!this.loader.get(moduleName)) {
-      this.log(`Module ${moduleName} was not reloaded because it was never loaded`);
+      this.logger.info(`Nothing to update`);
       return;
     }
 
     let rootModuleRecords = this.findRootModules(moduleName);
+    let updatedModules;
 
     return Promise.resolve()
       .then(() => {
-        this.log(`Found ${rootModuleRecords.length} root module(s):`);
+        this.logger.debug(`Found ${rootModuleRecords.length} root module(s):`);
         rootModuleRecords.forEach((rootModuleRecord) => {
-          this.log(` - ${rootModuleRecord.name}`);
+          this.logger.debug(` - ${this.stripUrlBase(rootModuleRecord.name)}`);
         });
       })
       /*
@@ -41,9 +66,9 @@ export default class SystemHotReloader {
         // TODO save reloadModuleRecord.importers
 
         rootModuleRecords.forEach((rootModuleRecord) => {
-          this.log(`Saving backup for ${rootModuleRecord.dependencies.length} dependent module(s) of ${rootModuleRecord.name}:`);
+          this.logger.info(`Saving backup for ${rootModuleRecord.dependencies.length} dependent module(s) of ${this.stripUrlBase(rootModuleRecord.name)}:`);
           rootModuleRecord.dependencies.forEach((moduleName) => {
-            this.log(` - ${moduleName}`);
+            this.logger.info(` - ${this.stripUrlBase(moduleName)}`);
           });
           rootModuleRecord.depBackup = this.saveModuleBackup(rootModuleRecord.dependencies);
         });
@@ -51,9 +76,13 @@ export default class SystemHotReloader {
       */
       .then(() => {
         rootModuleRecords.forEach((rootModuleRecord) => {
-          this.log(`Removing ${rootModuleRecord.dependencies.length} dependent module(s) of ${rootModuleRecord.name}:`);
+          if (!rootModuleRecord.dependencies.length) {
+            return;
+          }
+
+          this.logger.debug(`Removing ${rootModuleRecord.dependencies.length} dependent module(s) of ${this.stripUrlBase(rootModuleRecord.name)}:`);
           rootModuleRecord.dependencies.forEach((moduleName) => {
-            this.log(` - ${moduleName}`);
+            this.logger.debug(` - ${this.stripUrlBase(moduleName)}`);
           });
 
           rootModuleRecord.dependencies.forEach((moduleName) => {
@@ -66,8 +95,13 @@ export default class SystemHotReloader {
           let rootModule = this.loader.get(rootModuleRecord.name);
           let reloadHook = rootModule.__reload ? rootModule.__reload : undefined;
 
+          updatedModules = rootModuleRecord.dependencies.slice(0);
+          if (!reloadHook) {
+            updatedModules.push(rootModuleRecord.name);
+          }
+
           if (reloadHook) {
-            this.log(`Reloading root module using hook: ${rootModuleRecord.name}`);
+            this.logger.debug(`Reloading root module using hook: ${this.stripUrlBase(rootModuleRecord.name)}`);
             return Promise.resolve()
               .then(reloadHook)
               .then(() => {
@@ -96,24 +130,39 @@ export default class SystemHotReloader {
               });
               */
           } else {
-            this.log(`Saving backup for root module: ${rootModuleRecord.name}`);
-            rootModuleRecord.backup = this.saveModuleBackup([rootModuleRecord.name]);
+            if (!rootModuleRecord.name.match(/\.(scss|sass|less|css)$/)) {
+              this.logger.debug(`Saving backup for root module: ${this.stripUrlBase(rootModuleRecord.name)}`);
+              rootModuleRecord.backup = this.saveModuleBackup([rootModuleRecord.name]);
+            }
 
-            this.log(`Removing root module: ${rootModuleRecord.name}`);
+            this.logger.debug(`Removing root module: ${this.stripUrlBase(rootModuleRecord.name)}`);
             this.deleteModule(rootModuleRecord.name);
 
-            this.log(`Importing root module: ${rootModuleRecord.name}`);
+            this.logger.debug(`Importing root module: ${this.stripUrlBase(rootModuleRecord.name)}`);
             return this.loader.import(rootModuleRecord.name);
           }
         });
 
         return Promise.all(promises);
       })
-      .catch((error) => {
-        this.log(error.message);
-        this.log(error.stack);
+      .then(() => {
+        if (updatedModules.length) {
+          this.logger.info(`Updated modules:`);
+          updatedModules.forEach(name => {
+            this.logger.info(` - ${this.stripUrlBase(name)}`);
+          });
+        } else {
+          this.logger.info(`Nothing to update`);
+        }
 
-        this.log(`An error occured during reloading. Reverting...`);
+        let time = (performance.now() - startTime) / 1000;
+        this.logger.info(`Reload took ${Math.floor(time * 100) / 100} sec`);
+      })
+      .catch((error) => {
+        this.logger.error(error.message);
+        this.logger.error(error.stack);
+
+        this.logger.error(`An error occured during reloading. Reverting...`);
 
         // TODO: load reloadModuleRecord.importers
 
@@ -145,7 +194,7 @@ export default class SystemHotReloader {
         let newDepModuleRecord = moduleRecords[depModuleRecord.name];
 
         if (newDepModuleRecord !== depModuleRecord) {
-          this.log(`Fixing dependency ${depModuleRecord.name} for module ${moduleRecord.name}`);
+          this.logger.debug(`Fixing dependency ${this.stripUrlBase(depModuleRecord.name)} for module ${this.stripUrlBase(moduleRecord.name)}`);
           //moduleRecord.dependencies[index] = newDepModuleRecord;
           //moduleRecord.setters[index](newDepModuleRecord.exports);
 
@@ -164,7 +213,7 @@ export default class SystemHotReloader {
         let newImpModuleRecord = moduleRecords[impModuleRecord.name];
 
         if (newImpModuleRecord !== impModuleRecord) {
-          this.log(`Fixing importer ${impModuleRecord.name} for module ${moduleRecord.name}`);
+          this.logger.info(`Fixing importer ${this.stripUrlBase(impModuleRecord.name)} for module ${this.stripUrlBase(moduleRecord.name)}`);
           moduleRecord.importers[index] = newImpModuleRecord;
 
           this.fixModuleRels(impModuleRecord.name);
@@ -176,37 +225,39 @@ export default class SystemHotReloader {
   deleteModule(name) {
     let moduleRecord = this.loader._loader.moduleRecords[name];
 
-    moduleRecord.dependencies
-      .forEach((depModuleRecord) => {
-        if (!depModuleRecord) {
-          return;
-        }
-        depModuleRecord.importers
-          .forEach((impModuleRecord, index) => {
-            if (impModuleRecord && moduleRecord.name === impModuleRecord.name) {
-              this.log(`Removing import ${impModuleRecord.name} from module ${depModuleRecord.name}`);
-              depModuleRecord.importers[index] = null;
-            }
-          });
-      });
+    if (moduleRecord) {
+      moduleRecord.dependencies
+        .forEach((depModuleRecord) => {
+          if (!depModuleRecord) {
+            return;
+          }
+          depModuleRecord.importers
+            .forEach((impModuleRecord, index) => {
+              if (impModuleRecord && moduleRecord.name === impModuleRecord.name) {
+                this.logger.debug(`Removing import ${this.stripUrlBase(impModuleRecord.name)} from module ${this.stripUrlBase(depModuleRecord.name)}`);
+                depModuleRecord.importers[index] = null;
+              }
+            });
+        });
 
-    /*
-    moduleRecord.importers
-      .forEach((impModuleRecord) => {
-        if (!impModuleRecord) {
-          return;
-        }
-        impModuleRecord.dependencies
-          .forEach((depModuleRecord, index) => {
-            if (depModuleRecord && moduleRecord.name === depModuleRecord.name) {
-              this.log(`Removing dependency ${depModuleRecord.name} from module ${impModuleRecord.name}`);
-              impModuleRecord.dependencies[index] = null;
-            }
-          });
-      });
-    */
+      /*
+      moduleRecord.importers
+        .forEach((impModuleRecord) => {
+          if (!impModuleRecord) {
+            return;
+          }
+          impModuleRecord.dependencies
+            .forEach((depModuleRecord, index) => {
+              if (depModuleRecord && moduleRecord.name === depModuleRecord.name) {
+                this.logger.info(`Removing dependency ${this.stripUrlBase(depModuleRecord.name)} from module ${this.stripUrlBase(impModuleRecord.name)}`);
+                impModuleRecord.dependencies[index] = null;
+              }
+            });
+        });
+      */
+    }
 
-    this.log(`Removing module: ${name}`);
+    this.logger.debug(`Removing module: ${this.stripUrlBase(name)}`);
     this.loader.delete(name);
   }
 
