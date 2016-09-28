@@ -1,6 +1,18 @@
 # JSPM Skeleton #
 
+## SystemJS Hot Reloader ##
+
+Use `browser-sync` and plugin `bs-systemjs-hot-reloader` to run development server
+watch for changes, trace relations and emit `reload` events to connected clients.
+
+Avoid using of loaders via `!` because in that case there is no 100% way to
+convert file name into module name so reloader will have to iterate over all
+registered modules to find correct module name. It is recommended to define
+loader via `meta` SystemJS config section for files based on their extension.
+
 ## TODO ##
+
+- fix reloader with modules with ! in the end
 
 - Source Maps
 - fix SCSS assets path resolve
