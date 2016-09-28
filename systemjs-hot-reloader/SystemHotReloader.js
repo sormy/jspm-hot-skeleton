@@ -30,7 +30,7 @@ export default class SystemHotReloader {
   }
 
   reloadPath(path) {
-    this.logger.debug(`File reload: ${path}`);
+    this.logger.debug(`Reloading file: ${path}`);
 
     // try obvious resolve filename.ext => filename.ext
     let name1 = this.loader.normalizeSync(path);
@@ -70,7 +70,7 @@ export default class SystemHotReloader {
   reloadModule(moduleName) {
     let startTime = performance.now();
 
-    this.logger.info(`Module reload: ${this.cleanName(moduleName)}`);
+    this.logger.info(`Reloading module: ${this.cleanName(moduleName)}`);
 
     if (!this.loader.get(moduleName)) {
       this.logger.info(`Nothing to update`);
