@@ -14,7 +14,7 @@
         reloader.reloadPath(data.path);
       })
       .catch(function (error) {
-        console.error('BrowserSync SystemJS Hot Reloader: unable find SystemJS Hot Reloader');
+        console.error('BrowserSync SystemJS Hot Reloader: unable to load SystemJS Hot Reloader');
         console.error(error);
       });
   });
