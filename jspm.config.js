@@ -30,7 +30,10 @@ SystemJS.config({
   packages: {
     "app": {
       "main": "index",
-      "defaultExtension": "jsx"
+      "defaultExtension": "jsx",
+      "map": {
+        "./index.jsx|~browser": "./index-hot.jsx"
+      }
     },
     "systemjs-hot-reloader": {
       "main": "index",
