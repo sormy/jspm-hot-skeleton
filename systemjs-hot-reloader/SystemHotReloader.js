@@ -121,10 +121,11 @@ export default class SystemHotReloader {
           let rootModule = this.loader.get(rootModuleRecord.name);
           let reloadHook = rootModule.__reload ? rootModule.__reload : undefined;
 
-          updatedModules = rootModuleRecord.dependencies.slice(0);
-          if (!reloadHook) {
-            updatedModules.push(rootModuleRecord.name);
-          }
+          updatedModules = rootModuleRecord.dependencies
+            .map(name => {
+              return { name: name, reloadHook: false };
+            });
+          updatedModules.push({ name: rootModuleRecord.name, reloadHook: !!reloadHook });
 
           if (reloadHook) {
             this.logger.debug(`Reloading root module using hook: ${this.cleanName(rootModuleRecord.name)}`);
@@ -174,8 +175,9 @@ export default class SystemHotReloader {
       .then(() => {
         if (updatedModules.length) {
           this.logger.info(`Updated modules:`);
-          updatedModules.forEach(name => {
-            this.logger.info(` - ${this.cleanName(name)}`);
+          updatedModules.forEach((record) => {
+            const suffix = record.reloadHook ? '{ __reload() }' : '';
+            this.logger.info(` - ${this.cleanName(record.name)} ${suffix}`);
           });
         } else {
           this.logger.info(`Nothing to update`);
@@ -219,10 +221,14 @@ export default class SystemHotReloader {
 
         let newDepModuleRecord = moduleRecords[depModuleRecord.name];
 
+        if (!newDepModuleRecord) {
+          return;
+        }
+
         if (newDepModuleRecord !== depModuleRecord) {
           this.logger.debug(`Fixing dependency ${this.cleanName(depModuleRecord.name)} for module ${this.cleanName(moduleRecord.name)}`);
-          //moduleRecord.dependencies[index] = newDepModuleRecord;
-          //moduleRecord.setters[index](newDepModuleRecord.exports);
+          // moduleRecord.dependencies[index] = newDepModuleRecord;
+          // moduleRecord.setters[index](newDepModuleRecord.exports);
 
           // TODO: need to add if not exists and fix if exists
           newDepModuleRecord.importers.push(moduleRecord);
@@ -322,7 +328,7 @@ export default class SystemHotReloader {
       let rootModules = this.findRootModules(moduleRecord.name);
 
       rootModules.forEach((record) => {
-        record.dependencies.push(name);
+        record.dependencies.unshift(name);
       });
 
       Array.prototype.push.apply(result, rootModules);
