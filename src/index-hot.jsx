@@ -13,9 +13,5 @@ const root = document.getElementById('app-root');
 ReactDOM.render(<AppContainer><App /></AppContainer>, root);
 
 export function __reload() {
-  return System.import('app/App')
-    .then((exports) => {
-      let NextApp = exports.default;
-      ReactDOM.render(<AppContainer><NextApp /></AppContainer>, root);
-    });
+  ReactDOM.render(<AppContainer><App /></AppContainer>, root);
 }

@@ -130,34 +130,16 @@ export default class SystemHotReloader {
           updatedModules.push({ name: rootModuleRecord.name, reloadHook: !!reloadHook });
 
           if (reloadHook) {
-            this.logger.debug(`Reloading root module using hook: ${this.cleanName(rootModuleRecord.name)}`);
-            return Promise.resolve()
-              .then(reloadHook)
-              .then(() => {
-                this.fixModuleRels(rootModuleRecord.name);
-              });
+            let imports = rootModuleRecord.dependencies
+              .map(moduleName => this.loader.import(moduleName));
 
-            /*
-            return Promise.resolve()
-              .then(reloadHook)
-
-              .then((result) => {
-                return result === false ? Promise.reject() : undefined;
-              })
+            return Promise.all(imports)
               .then(() => {
-                let entryRecord = this.loader._loader.moduleRecords[rootModuleRecord.name];
-                entryRecord.dependencies = entryRecord.dependencies
-                  .filter((depRecord) => !!depRecord)
-                  .map((depRecord) => {
-                    let currentDepRecord = this.loader._loader.moduleRecords[depRecord.name];
-                    if (currentDepRecord !== depRecord) {
-                      currentDepRecord.importers.push(entryRecord);
-                      return currentDepRecord;
-                    }
-                    return depRecord;
-                  });
+                this.fixModuleDeps(rootModuleRecord.name);
+
+                this.logger.debug(`Reloading root module using hook: ${this.cleanName(rootModuleRecord.name)}`);
+                return reloadHook();
               });
-              */
           } else {
             if (!rootModuleRecord.name.match(/\.(scss|sass|less|css)$/)) {
               this.logger.debug(`Saving backup for root module: ${this.cleanName(rootModuleRecord.name)}`);
@@ -210,7 +192,7 @@ export default class SystemHotReloader {
       });
   }
 
-  fixModuleRels(name) {
+  fixModuleDeps(name) {
     let moduleRecords = this.loader._loader.moduleRecords;
 
     let moduleRecord = moduleRecords[name];
@@ -229,31 +211,19 @@ export default class SystemHotReloader {
 
         if (newDepModuleRecord !== depModuleRecord) {
           this.logger.debug(`Fixing dependency ${this.cleanName(depModuleRecord.name)} for module ${this.cleanName(moduleRecord.name)}`);
-          // moduleRecord.dependencies[index] = newDepModuleRecord;
-          // moduleRecord.setters[index](newDepModuleRecord.exports);
 
-          // TODO: need to add if not exists and fix if exists
-          newDepModuleRecord.importers.push(moduleRecord);
+          moduleRecord.setters[index](newDepModuleRecord.exports);
+          if (moduleRecord.dependencies[index] !== newDepModuleRecord.exports) {
+            moduleRecord.dependencies[index] = newDepModuleRecord;
+          }
+
+          let impRecord = newDepModuleRecord.importers
+            .find((record) => record && record.name === moduleRecord);
+          if (!impRecord) {
+            newDepModuleRecord.importers.push(moduleRecord);
+          }
         }
       });
-
-    /*
-    moduleRecord.importers
-      .forEach((impModuleRecord, index) => {
-        if (!impModuleRecord) {
-          return;
-        }
-
-        let newImpModuleRecord = moduleRecords[impModuleRecord.name];
-
-        if (newImpModuleRecord !== impModuleRecord) {
-          this.logger.info(`Fixing importer ${this.cleanName(impModuleRecord.name)} for module ${this.cleanName(moduleRecord.name)}`);
-          moduleRecord.importers[index] = newImpModuleRecord;
-
-          this.fixModuleRels(impModuleRecord.name);
-        }
-      });
-    */
   }
 
   deleteModule(name) {
