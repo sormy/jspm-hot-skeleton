@@ -213,6 +213,7 @@ export default class SystemHotReloader {
           this.logger.debug(`Fixing dependency ${this.cleanName(depModuleRecord.name)} for module ${this.cleanName(moduleRecord.name)}`);
 
           moduleRecord.setters[index](newDepModuleRecord.exports);
+
           if (moduleRecord.dependencies[index] !== newDepModuleRecord.exports) {
             moduleRecord.dependencies[index] = newDepModuleRecord;
           }
