@@ -61,9 +61,11 @@ export default class SystemHotReloader {
   }
 
   cleanName(name) {
+    // remove base url prefix
     if (name.startsWith(this.loader.baseURL)) {
-      return './' + name.substr(this.loader.baseURL.length).replace(/!.*$/, '');
+      name = './' + name.substr(this.loader.baseURL.length);
     }
+    // remove loader related garbage
     return name.replace(/!.*$/, '');
   }
 
