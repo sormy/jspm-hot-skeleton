@@ -29,19 +29,17 @@ export default class SystemHotReloader {
     }
   }
 
-  reloadPath(path) {
-    this.logger.debug(`Reloading file: ${path}`);
-
+  resolvePath(path) {
     // try obvious resolve filename.ext => filename.ext
     let name1 = this.loader.normalizeSync(path);
     if (this.loader.get(name1)) {
-      return this.reloadModule(name1);
+      return name1;
     }
 
     // try less obvious resolve filename.ext => filename.ext!
     let name2 = this.loader.normalizeSync(path + '!');
     if (this.loader.get(name2)) {
-      return this.reloadModule(name2);
+      return name2;
     }
 
     // try to find by filename path in all registered modules, slow :-(
@@ -51,12 +49,21 @@ export default class SystemHotReloader {
       }
     });
     if (name3) {
-      return this.reloadModule(name3);
+      return name3;
+    }
+  }
+
+  reloadPath(path) {
+    this.logger.debug(`Reloading file: ${path}`);
+
+    let name = this.resolvePath(path);
+
+    if (name) {
+      return this.reloadModule(name);
     }
 
     // we did not find module :-(
     this.logger.info(`Nothing to update`);
-
     return Promise.resolve();
   }
 
