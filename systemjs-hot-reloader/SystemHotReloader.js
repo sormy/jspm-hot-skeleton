@@ -1,9 +1,16 @@
 export default class SystemHotReloader {
-  constructor(loader, logLevel) {
-    this.loader = loader || SystemJS || System;
+  /**
+   * Constructor.
+   *
+   * @param {Object} options
+   * @prop  {Object} loader   SystemJS instance, default to SystemJS || System
+   * @prop  {Number} logLevel 0 - none, 1 - error, 2 - info (default), 3 - debug
+   */
+  constructor(options) {
+    options = options || {};
 
-    // 0 - none, 1 - error, 2 - info, 3 - debug
-    this.logLevel = logLevel !== undefined ? logLevel : 3;
+    this.loader = options.loader || SystemJS || System;
+    this.logLevel = options.loader === undefined ? 2 : options.logLevel;
 
     this.logger = this.createLogger('HMR');
 
@@ -36,7 +43,7 @@ export default class SystemHotReloader {
   }
 
   /**
-   * Resolve module file path to module name..
+   * Resolve module file path to module name.
    */
   resolvePath(path) {
     // try obvious resolve filename.ext => filename.ext
@@ -106,8 +113,7 @@ export default class SystemHotReloader {
     }
 
     let moduleChain = this.getReloadChain([moduleName]);
-    let updatedModules = [];
-    let moduleBackups = [];
+    let moduleBackups = {};
 
     return Promise.resolve()
       .then(() => {
@@ -117,55 +123,39 @@ export default class SystemHotReloader {
         });
       })
       .then(() => {
-        let promise = Promise.resolve();
-
+        this.logger.debug('Saving backup');
         moduleChain.forEach((name) => {
-          const exports = this.loader.get(name);
-
-          const unload = exports ? exports.__unload : undefined;
-          const reload = exports ? exports.__reload : undefined;
-
-          if (reload) {
-            // TODO: mark module to refix on backup restore
-
-            promise = promise
-              .then(() => this.fixModuleDeps(name))
-              .then(() => reload(moduleChain));
-          } else {
-            moduleBackups.push(this.getModuleBackup(name));
-
-            promise = promise
-              .then(() => unload ? unload(moduleChain) : undefined)
-              .then(() => this.deleteModule(name))
-              .then(() => this.importModule(name));
-          }
-
-          promise = promise.then(() => {
-            const options = [];
-            if (reload) {
-              options.push('__reload()');
-            } else if (unload) {
-              options.push('__unload()');
-            }
-            updatedModules.push({ name, options });
-          });
+          moduleBackups[name] = this.getModuleBackup(name);
         });
-
+      })
+      .then(() => {
+        let promise = Promise.resolve();
+        moduleChain.forEach((name) => {
+          promise = promise.then(() => this.reloadModuleInstance(name, moduleChain))
+        });
         return promise;
       })
       .then(() => {
-        if (updatedModules.length) {
+        if (moduleChain.length) {
           this.logger.info('Updated modules:');
-          updatedModules.forEach((record) => {
-            const suffix = record.options.length ? `{ ${record.options.join(', ')} }` : '';
-            this.logger.info(` - ${this.cleanName(record.name)} ${suffix}`);
+          moduleChain.forEach((name) => {
+            const exports = this.loader.get(name);
+            let options = [];
+            if (exports && exports.__reload) {
+              options.push('__reload()');
+            } else if (exports && exports.__unload) {
+              options.push('__unload()');
+            }
+            const suffix = options.length ? `{ ${options.join(', ')} }` : '';
+            this.logger.info(` - ${this.cleanName(name)} ${suffix}`);
           });
         } else {
           this.logger.info('Nothing to update');
         }
 
         let time = (performance.now() - startTime) / 1000;
-        this.logger.info(`Reload took ${Math.floor(time * 100) / 100} sec`);
+        let timeSecRound = Math.floor(time * 100) / 100;
+        this.logger.info(`Reload took ${timeSecRound} sec`);
       })
       .catch((error) => {
         if (error) {
@@ -174,8 +164,45 @@ export default class SystemHotReloader {
 
         this.logger.error('An error occured during reloading. Reverting...');
 
-        this.restoreModuleBackups(moduleBackups);
+        let promise = Promise.resolve();
+
+        moduleChain.forEach((name) => {
+          promise = promise.then(() => this.reloadModuleInstance(name, moduleChain, moduleBackups[name]));
+        });
+
+        promise = promise.then(() => {
+          this.logger.info('Application state was restored')
+        })
+
+        return promise;
+      })
+      .catch((error) => {
+        if (error) {
+          this.logger.error(error.stack || error);
+        }
+        this.logger.error('An unrecoverable error occured during reverting')
       });
+  }
+
+  /**
+   * Reload module instance with option to reload from backup.
+   */
+  reloadModuleInstance(name, moduleChain, backup) {
+    const exports = backup ? backup.exports : this.loader.get(name);
+
+    const unload = exports ? exports.__unload : undefined;
+    const reload = exports ? exports.__reload : undefined;
+
+    if (reload) {
+      return Promise.resolve()
+        .then(() => this.fixModuleDeps(name))
+        .then(() => reload(moduleChain));
+    }
+
+    return Promise.resolve()
+        .then(() => unload ? unload(moduleChain) : undefined)
+        .then(() => backup ? this.restoreModuleBackup(backup) : this.deleteModule(name))
+        .then(() => this.importModule(name));
   }
 
   /**
@@ -244,22 +271,6 @@ export default class SystemHotReloader {
               }
             });
         });
-
-      /*
-      moduleRecord.importers
-        .forEach((impModuleRecord) => {
-          if (!impModuleRecord) {
-            return;
-          }
-          impModuleRecord.dependencies
-            .forEach((depModuleRecord, index) => {
-              if (depModuleRecord && moduleRecord.name === depModuleRecord.name) {
-                this.logger.info(`Removing dependency ${this.cleanName(depModuleRecord.name)} from module ${this.cleanName(impModuleRecord.name)}`);
-                impModuleRecord.dependencies[index] = null;
-              }
-            });
-        });
-      */
     }
 
     this.logger.debug(`Removing module ${this.cleanName(name)}`);
@@ -276,13 +287,11 @@ export default class SystemHotReloader {
   }
 
   /**
-   * Restore module set from array of backups.
+   * Restore module from backup.
    */
-  restoreModuleBackups(backups) {
-    backups.forEach((data) => {
-      this.loader.set(data.name, data.exports);
-      this.loader._loader.moduleRecords[data.name] = data.record;
-    });
+  restoreModuleBackup(data) {
+    this.loader.set(data.name, data.exports);
+    this.loader._loader.moduleRecords[data.name] = data.record;
   }
 
   /**
