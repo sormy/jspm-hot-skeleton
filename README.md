@@ -18,6 +18,17 @@ loader via `meta` SystemJS config section for files based on their extension.
 - fix SCSS assets path resolve
 - fix react hot reloader deps
 - react redbox?
+- recover after error
+- show all errors in fancy window
+- show notify() on reload
+- __reload() for each reloaded module
+- __unload() for each unloaded module
+- inject new module in each dep to omit usage of SystemJS.import in __reload()
+- assume that scss|sass|less|style have no exports
+  (so reloading them will not cause reload for modules which imports them)
+- babel plugin to strip __unload() / __reload() in production builds
+- module unload if it is not used anymore
+- fancy error screen
 
 ## Features ##
 

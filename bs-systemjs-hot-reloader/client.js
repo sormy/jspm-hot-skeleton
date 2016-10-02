@@ -9,13 +9,13 @@
     }
 
     loader.import('systemjs-hot-reloader')
+      .catch(function (error) {
+        console.error('BrowserSync SystemJS Hot Reloader: unable to load module "systemjs-hot-reloader"');
+        console.error(error.stack || error);
+      })
       .then(function (exports) {
         var reloader = exports.default;
         reloader.reloadPath(data.path);
-      })
-      .catch(function (error) {
-        console.error('BrowserSync SystemJS Hot Reloader: unable to load SystemJS Hot Reloader');
-        console.error(error);
       });
   });
 })(window, window.___browserSync___);
