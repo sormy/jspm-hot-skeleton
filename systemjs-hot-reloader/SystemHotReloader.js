@@ -1,14 +1,20 @@
 export default class SystemHotReloader {
-  constructor(loader) {
+  constructor(loader, logLevel) {
     this.loader = loader || SystemJS || System;
-    this.logLevel = 2;  // 0 - none, 1 - error, 2 - info, 3 - debug
+
+    // 0 - none, 1 - error, 2 - info, 3 - debug
+    this.logLevel = logLevel !== undefined ? logLevel : 3;
+
     this.logger = this.createLogger('HMR');
 
-    if (!loader) {
+    if (!this.loader) {
       throw 'Unable to instantiate SystemJS Hot Reloader without SystemJS';
     }
   }
 
+  /**
+   * Create logger.
+   */
   createLogger(prefix) {
     return {
       debug: (message) => {
@@ -29,6 +35,9 @@ export default class SystemHotReloader {
     }
   }
 
+  /**
+   * Resolve module file path to module name..
+   */
   resolvePath(path) {
     // try obvious resolve filename.ext => filename.ext
     let name1 = this.loader.normalizeSync(path);
@@ -53,6 +62,9 @@ export default class SystemHotReloader {
     }
   }
 
+  /**
+   * Reload module by file path.
+   */
   reloadPath(path) {
     this.logger.debug(`Reloading file: ${path}`);
 
@@ -67,138 +79,108 @@ export default class SystemHotReloader {
     return Promise.resolve();
   }
 
+  /**
+   * Clean full module name from useless base url prefix and loader related suffix.
+   */
   cleanName(name) {
     // remove base url prefix
     if (name.startsWith(this.loader.baseURL)) {
       name = './' + name.substr(this.loader.baseURL.length);
     }
+
     // remove loader related garbage
     return name.replace(/!.*$/, '');
   }
 
+  /**
+   * Reload module by full module name.
+   */
   reloadModule(moduleName) {
     let startTime = performance.now();
 
-    this.logger.info(`Reloading module: ${this.cleanName(moduleName)}`);
+    this.logger.info(`Reloading module ${this.cleanName(moduleName)}`);
 
     if (!this.loader.get(moduleName)) {
-      this.logger.info(`Nothing to update`);
+      this.logger.info('Nothing to update');
       return;
     }
 
-    let rootModuleRecords = this.findRootModules(moduleName);
-    let updatedModules;
+    let moduleChain = this.getReloadChain([moduleName]);
+    let updatedModules = [];
+    let moduleBackups = [];
 
     return Promise.resolve()
       .then(() => {
-        this.logger.debug(`Found ${rootModuleRecords.length} root module(s):`);
-        rootModuleRecords.forEach((rootModuleRecord) => {
-          this.logger.debug(` - ${this.cleanName(rootModuleRecord.name)}`);
+        this.logger.debug('Reload chain:');
+        moduleChain.forEach((name) => {
+          this.logger.debug(` - ${this.cleanName(name)}`);
         });
       })
-      /*
       .then(() => {
-        // TODO save reloadModuleRecord.importers
+        let promise = Promise.resolve();
 
-        rootModuleRecords.forEach((rootModuleRecord) => {
-          this.logger.info(`Saving backup for ${rootModuleRecord.dependencies.length} dependent module(s) of ${this.cleanName(rootModuleRecord.name)}:`);
-          rootModuleRecord.dependencies.forEach((moduleName) => {
-            this.logger.info(` - ${this.cleanName(moduleName)}`);
-          });
-          rootModuleRecord.depBackup = this.saveModuleBackup(rootModuleRecord.dependencies);
-        });
-      })
-      */
-      .then(() => {
-        rootModuleRecords.forEach((rootModuleRecord) => {
-          if (!rootModuleRecord.dependencies.length) {
-            return;
-          }
+        moduleChain.forEach((name) => {
+          const exports = this.loader.get(name);
 
-          this.logger.debug(`Removing ${rootModuleRecord.dependencies.length} dependent module(s) of ${this.cleanName(rootModuleRecord.name)}:`);
-          rootModuleRecord.dependencies.forEach((moduleName) => {
-            this.logger.debug(` - ${this.cleanName(moduleName)}`);
-          });
+          const unload = exports ? exports.__unload : undefined;
+          const reload = exports ? exports.__reload : undefined;
 
-          rootModuleRecord.dependencies.forEach((moduleName) => {
-            this.deleteModule(moduleName);
-          });
-        })
-      })
-      .then(() => {
-        let promises = rootModuleRecords.map((rootModuleRecord) => {
-          let rootModule = this.loader.get(rootModuleRecord.name);
-          let reloadHook = rootModule.__reload ? rootModule.__reload : undefined;
+          if (reload) {
+            // TODO: mark module to refix on backup restore
 
-          updatedModules = rootModuleRecord.dependencies
-            .map(name => {
-              return { name: name, reloadHook: false };
-            });
-          updatedModules.push({ name: rootModuleRecord.name, reloadHook: !!reloadHook });
-
-          if (reloadHook) {
-            let imports = rootModuleRecord.dependencies
-              .map(moduleName => this.loader.import(moduleName));
-
-            return Promise.all(imports)
-              .then(() => {
-                this.fixModuleDeps(rootModuleRecord.name);
-
-                this.logger.debug(`Reloading root module using hook: ${this.cleanName(rootModuleRecord.name)}`);
-                return reloadHook();
-              });
+            promise = promise
+              .then(() => this.fixModuleDeps(name))
+              .then(() => reload(moduleChain));
           } else {
-            if (!rootModuleRecord.name.match(/\.(scss|sass|less|css)$/)) {
-              this.logger.debug(`Saving backup for root module: ${this.cleanName(rootModuleRecord.name)}`);
-              rootModuleRecord.backup = this.saveModuleBackup([rootModuleRecord.name]);
-            }
+            moduleBackups.push(this.getModuleBackup(name));
 
-            this.logger.debug(`Removing root module: ${this.cleanName(rootModuleRecord.name)}`);
-            this.deleteModule(rootModuleRecord.name);
-
-            this.logger.debug(`Importing root module: ${this.cleanName(rootModuleRecord.name)}`);
-            return this.loader.import(rootModuleRecord.name);
+            promise = promise
+              .then(() => unload ? unload(moduleChain) : undefined)
+              .then(() => this.deleteModule(name))
+              .then(() => this.importModule(name));
           }
+
+          promise = promise.then(() => {
+            const options = [];
+            if (reload) {
+              options.push('__reload()');
+            } else if (unload) {
+              options.push('__unload()');
+            }
+            updatedModules.push({ name, options });
+          });
         });
 
-        return Promise.all(promises);
+        return promise;
       })
       .then(() => {
         if (updatedModules.length) {
-          this.logger.info(`Updated modules:`);
+          this.logger.info('Updated modules:');
           updatedModules.forEach((record) => {
-            const suffix = record.reloadHook ? '{ __reload() }' : '';
+            const suffix = record.options.length ? `{ ${record.options.join(', ')} }` : '';
             this.logger.info(` - ${this.cleanName(record.name)} ${suffix}`);
           });
         } else {
-          this.logger.info(`Nothing to update`);
+          this.logger.info('Nothing to update');
         }
 
         let time = (performance.now() - startTime) / 1000;
         this.logger.info(`Reload took ${Math.floor(time * 100) / 100} sec`);
       })
       .catch((error) => {
-        this.logger.error(error.message);
-        this.logger.error(error.stack);
+        if (error) {
+          this.logger.error(error.stack || error);
+        }
 
-        this.logger.error(`An error occured during reloading. Reverting...`);
+        this.logger.error('An error occured during reloading. Reverting...');
 
-        // TODO: load reloadModuleRecord.importers
-
-        /*
-        let promises = rootModuleRecords.map((rootModuleRecord) => {
-          this.loadModuleBackup(rootModuleRecord.depBackup);
-          if (rootModuleRecord.backup) {
-            this.loadModuleBackup(rootModuleRecord.backup);
-          }
-          return this.loader.import(rootModuleRecord.name);
-        });
-
-        return Promise.all(promises);
-        */
+        this.restoreModuleBackups(moduleBackups);
       });
   }
 
+  /**
+   * Fix module dependencies before hooked reload.
+   */
   fixModuleDeps(name) {
     let moduleRecords = this.loader._loader.moduleRecords;
 
@@ -234,6 +216,17 @@ export default class SystemHotReloader {
       });
   }
 
+  /**
+   * Import module.
+   */
+  importModule(name) {
+    this.logger.debug(`Importing module ${this.cleanName(name)}`);
+    return this.loader.import(name);
+  }
+
+  /**
+   * Delete module and fix importers for dependencies.
+   */
   deleteModule(name) {
     let moduleRecord = this.loader._loader.moduleRecords[name];
 
@@ -246,7 +239,7 @@ export default class SystemHotReloader {
           depModuleRecord.importers
             .forEach((impModuleRecord, index) => {
               if (impModuleRecord && moduleRecord.name === impModuleRecord.name) {
-                this.logger.debug(`Removing import ${this.cleanName(impModuleRecord.name)} from module ${this.cleanName(depModuleRecord.name)}`);
+                this.logger.debug(`Removing importer ${this.cleanName(impModuleRecord.name)} from module ${this.cleanName(depModuleRecord.name)}`);
                 depModuleRecord.importers[index] = null;
               }
             });
@@ -269,51 +262,89 @@ export default class SystemHotReloader {
       */
     }
 
-    this.logger.debug(`Removing module: ${this.cleanName(name)}`);
+    this.logger.debug(`Removing module ${this.cleanName(name)}`);
     this.loader.delete(name);
   }
 
-  saveModuleBackup(list) {
-    return list.reduce((result, moduleName) => {
-      result[moduleName] = {
-        exports: this.loader.get(moduleName),
-        record: this.loader._loader.moduleRecords[moduleName]
-      };
-      return result;
-    }, {});
+  /**
+   * Get module backup which could be used to restore module state.
+   */
+  getModuleBackup(name) {
+    const exports = this.loader.get(name);
+    const record = this.loader._loader.moduleRecords[name];
+    return { name, record, exports };
   }
 
-  loadModuleBackup(state) {
-    for (let moduleName in state) {
-      let data = state[moduleName];
-      this.loader.set(moduleName, data.exports);
-      this.loader._loader.moduleRecords[moduleName] = data.record;
-    }
+  /**
+   * Restore module set from array of backups.
+   */
+  restoreModuleBackups(backups) {
+    backups.forEach((data) => {
+      this.loader.set(data.name, data.exports);
+      this.loader._loader.moduleRecords[data.name] = data.record;
+    });
   }
 
-  findRootModules(name) {
-    let moduleRecords = this.loader._loader.moduleRecords;
+  /**
+   * Get shortest distance to the root module (root modules have no importers).
+   */
+  getModuleDistanceToRoot(name, record, cache) {
+    let distance;
+    if (cache[name] !== undefined) {
+      return cache[name];
+    }
+    if (!record || !record.importers.length) {
+      distance = 0;
+    } else {
+      distance = record.importers.reduce((result, impRecord) => {
+        let impDistance = 1 + this.getModuleDistanceToRoot(impRecord.name, impRecord, cache);
+        return result === null ? impDistance : Math.min(result, impDistance);
+      }, null);
+    }
+    cache[name] = distance;
+    return distance;
+  }
 
-    let importers = moduleRecords[name] ? moduleRecords[name].importers : [];
-
-    if (!importers.length) {
-      return [{ name: name, dependencies: [] }];
+  /**
+   * Reduce dependency tree and return modules in the order they should be reloaded.
+   */
+  getReloadChain(modules, cache) {
+    if (modules.length === 0) {
+      return modules;
     }
 
-    return importers.reduce((result, moduleRecord) => {
-      if (!moduleRecord) {
-        return result;
+    const records = this.loader._loader.moduleRecords;
+
+    if (!cache) {
+      cache = {};
+    }
+
+    const farNode = modules.reduce((result, name, index) => {
+      const record = records[name] ? records[name] : undefined;
+      const distance = this.getModuleDistanceToRoot(name, record, cache);
+      const importers = !record ? [] : record.importers.map((item) => item.name);
+      const reload = record && record.exports && record.exports.__reload;
+      const meta = { distance, index, name, importers, reload };
+      if (result === undefined) {
+        return meta;
       }
+      return result.distance >= distance ? result : meta;
+    }, undefined);
 
-      let rootModules = this.findRootModules(moduleRecord.name);
-
-      rootModules.forEach((record) => {
-        record.dependencies.unshift(name);
+    const nextModules = modules.slice(0);
+    nextModules.splice(farNode.index, 1);
+    if (!farNode.reload) {
+      farNode.importers.forEach((name) => {
+        if (nextModules.indexOf(name) === -1) {
+          nextModules.push(name);
+        }
       });
+    }
 
-      Array.prototype.push.apply(result, rootModules);
+    const nextResult = this.getReloadChain(nextModules, cache);
 
-      return result;
-    }, []);
+    const result = [farNode.name].concat(nextResult);
+
+    return result;
   }
 }
