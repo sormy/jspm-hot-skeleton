@@ -159,7 +159,8 @@ export default class SystemHotReloader {
       })
       .catch((error) => {
         if (error) {
-          this.logger.error(error.stack || error);
+          const realError = error.originalErr || error;
+          this.logger.error(realError.stack || realError);
         }
 
         this.logger.error('An error occured during reloading. Reverting...');
