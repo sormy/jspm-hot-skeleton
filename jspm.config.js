@@ -18,9 +18,6 @@ SystemJS.config({
   babelOptions: {
     "presets": [
       "babel-preset-react"
-    ],
-    "plugins": [
-      "react-hot-loader/babel"
     ]
   },
   sassPluginOptions: {
@@ -30,7 +27,7 @@ SystemJS.config({
   packages: {
     "app": {
       "main": "index",
-      "defaultExtension": "jsx",
+      "defaultExtension": "jsx"
     },
     "systemjs-hot-reloader": {
       "main": "index",
@@ -38,9 +35,14 @@ SystemJS.config({
     }
   },
   browserConfig: {
-    packages: {
+    "babelOptions": {
+      "plugins": [
+        "react-hot-loader/babel"
+      ]
+    },
+    "packages": {
       "app": {
-        "main": "index-hot",
+        "main": "index-hot"
       }
     }
   },
