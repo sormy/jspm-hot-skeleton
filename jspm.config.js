@@ -263,7 +263,8 @@ SystemJS.config({
           "global": "npm:global@4.3.1",
           "react-proxy": "npm:react-proxy@3.0.0-alpha.1",
           "redbox-react": "npm:redbox-react@1.3.2",
-          "babel-template": "npm:babel-template@6.16.0"
+          "babel-template": "npm:babel-template@6.16.0",
+          "source-map": "npm:source-map@0.4.4"
         }
       },
       "npm:babel-preset-react@6.16.0": {
@@ -337,6 +338,11 @@ SystemJS.config({
           "fs": "github:jspm/nodelibs-fs@0.1.2",
           "url": "github:jspm/nodelibs-url@0.1.0",
           "reqwest": "github:ded/reqwest@2.0.5"
+        }
+      },
+      "npm:source-map@0.4.4": {
+        "map": {
+          "amdefine": "npm:amdefine@1.0.0"
         }
       }
     }

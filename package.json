@@ -13,7 +13,7 @@
       "plugin-babel": "npm:systemjs-plugin-babel@^0.0.15",
       "plugin-css": "github:systemjs/plugin-css@^0.1.29",
       "plugin-sass": "github:sormy/plugin-sass@master",
-      "react-hot-loader": "npm:react-hot-loader@^3.0.0-beta.5",
+      "react-hot-loader": "npm:react-hot-loader@^3.0.0-beta.6",
       "systemjs-hot-reloader-ex": "npm:systemjs-hot-reloader-ex@^2.0.0"
     },
     "peerDependencies": {
@@ -135,16 +135,6 @@
       "npm:ms@0.7.1": {
         "jspmNodeConversion": false,
         "format": "cjs"
-      },
-      "npm:react-hot-loader@3.0.0-beta.6": {
-        "dependencies": {
-          "babel-template": "^6.7.0",
-          "react": "^15.0.2",
-          "react-proxy": "^3.0.0-alpha.0",
-          "global": "^4.3.0",
-          "react-deep-force-update": "^2.0.1",
-          "redbox-react": "^1.2.5"
-        }
       },
       "npm:sass.js@0.9.13": {
         "map": {
