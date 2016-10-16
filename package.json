@@ -1,4 +1,36 @@
 {
+  "name": "skeleton-jspm-hot",
+  "version": "1.0.0",
+  "description": "JSPM skeleton featuring JSPM, SystemJS, BrowserSync, Hot Reload (CSS/JS), SCSS, CSS, React, Bootstrap 4.x, Font Awesome, Open Sans, Development/Production Build, CSS URL Rewrite, CSS Asset Bundler",
+  "main": "src/index.js",
+  "keywords": [
+    "JSPM",
+    "SystemJS",
+    "BrowserSync",
+    "skeleton",
+    "boilerplate",
+    "example",
+    "hot reload",
+    "SCSS",
+    "CSS",
+    "React",
+    "Bootstrap 4.x",
+    "bundle",
+    "Font Awesome",
+    "Open Sans",
+    "CSS URL Rewrite",
+    "CSS Asset Bundler"
+  ],
+  "author": "Artem Butusov <art.sormy@gmail.com>",
+  "homepage": "https://github.com/sormy/skeleton-jspm-hot",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sormy/skeleton-jspm-hot"
+  },
+  "bugs": {
+    "url": "https://github.com/sormy/skeleton-jspm-hot/issues"
+  },
   "jspm": {
     "name": "app",
     "main": "src/index.jsx",
