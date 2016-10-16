@@ -1,4 +1,4 @@
-# JSPM Skeleton #
+# JSPM Hot Skeleton #
 
 ## Features ##
 
