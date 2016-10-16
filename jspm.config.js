@@ -19,7 +19,8 @@ SystemJS.config({
   babelOptions: {
     "presets": [
       "babel-preset-react"
-    ]
+    ],
+    "compact": false
   },
   sassPluginOptions: {
     "copyAssets": true,
