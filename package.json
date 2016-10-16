@@ -190,13 +190,13 @@
     "build": "npm run build:prod",
     "build:dev": "npm run clean && npm run build:jspm:dev && npm run build:index",
     "build:prod": "npm run clean && npm run build:jspm:prod && npm run build:index",
-    "build:jspm:dev": "jspm build app dist/app.js --source-map-contents",
-    "build:jspm:prod": "jspm build app dist/app.js --minify --skip-source-maps",
+    "build:jspm:dev": "jspm build app dist/app.js --format global",
+    "build:jspm:prod": "jspm build app dist/app.js --format global --minify --skip-source-maps",
     "build:index": "cp -f index.dist.html dist/index.html",
     "serve": "npm run serve:prod",
-    "serve:dev": "npm run build:dev && node serve.dist.js",
-    "serve:prod": "npm run build:prod && node serve.dist.js",
-    "serve:hot": "node serve.js",
+    "serve:dev": "npm run build:dev && node scripts/serve.dist.js",
+    "serve:prod": "npm run build:prod && node scripts/serve.dist.js",
+    "serve:hot": "node scripts/serve.js",
     "start": "npm run serve:hot"
   }
 }
