@@ -6,7 +6,6 @@
       "bootstrap": "github:twbs/bootstrap@4.0.0-alpha.4",
       "font-awesome": "npm:font-awesome@^4.6.3",
       "open-sans": "github:FontFaceKit/open-sans@^1.4.2",
-      "react": "npm:react@^15.3.2",
       "react-dom": "npm:react-dom@^15.3.2"
     },
     "devDependencies": {
@@ -33,6 +32,7 @@
       "os": "github:jspm/nodelibs-os@^0.2.0-alpha",
       "path": "github:jspm/nodelibs-path@^0.2.0-alpha",
       "process": "github:jspm/nodelibs-process@^0.2.0-alpha",
+      "react": "npm:react@^15.3.2",
       "stream": "github:jspm/nodelibs-stream@^0.2.0-alpha",
       "string_decoder": "github:jspm/nodelibs-string_decoder@^0.2.0-alpha",
       "url": "github:jspm/nodelibs-url@^0.2.0-alpha",
