@@ -1,5 +1,7 @@
 var browserSync = require('browser-sync');
-var bsSystemHotReloader = require('./bs-systemjs-hot-reloader');
+var bsSystemHotReloader = require('bs-systemjs-hot-reloader');
+
+var bsConfig = require('./serve.config');
 
 var bs = browserSync.create();
 
@@ -13,9 +15,4 @@ bs.use(bsSystemHotReloader, {
   ]
 });
 
-bs.init({
-  online: false,
-  open: false,
-  reloadOnRestart: true,
-  server: '.'
-});
+bs.init(Object.assign({ server: '.' }, bsConfig));
