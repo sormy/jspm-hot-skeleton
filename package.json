@@ -166,7 +166,7 @@
   "scripts": {
     "clean": "rm -rf dist && mkdir dist",
     "build": "npm run clean && npm run build:jspm && npm run build:index",
-    "build:jspm": "jspm build app dist/app.js --format global --minify --skip-source-maps",
+    "build:jspm": "jspm build app dist/app.js --minify --skip-source-maps",
     "build:index": "cp -f index.dist.html dist/index.html",
     "serve": "npm run build && node serve.dist.js",
     "start": "node serve.js"
