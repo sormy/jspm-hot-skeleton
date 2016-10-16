@@ -51,7 +51,7 @@ SystemJS.config({
       "babel-preset-react": "npm:babel-preset-react@6.16.0",
       "plugin-css": "github:systemjs/plugin-css@0.1.31",
       "react-hot-loader": "npm:react-hot-loader@3.0.0-beta.6",
-      "plugin-sass": "local:plugin-sass@0.4.6",
+      "plugin-sass": "github:sormy/plugin-sass@master",
       "systemjs-hot-reloader-ex": "npm:systemjs-hot-reloader-ex@2.0.0"
     },
     "packages": {
@@ -134,20 +134,6 @@ SystemJS.config({
       "npm:debug@2.2.0": {
         "map": {
           "ms": "npm:ms@0.7.1"
-        }
-      },
-      "local:plugin-sass@0.4.6": {
-        "map": {
-          "autoprefixer": "npm:autoprefixer@6.5.1",
-          "lodash": "npm:lodash@4.16.4",
-          "postcss": "npm:postcss@5.2.4",
-          "sass.js": "npm:sass.js@0.9.13",
-          "path": "github:jspm/nodelibs-path@0.1.0",
-          "fs": "github:jspm/nodelibs-fs@0.1.2",
-          "reqwest": "github:ded/reqwest@2.0.5",
-          "url": "github:jspm/nodelibs-url@0.1.0",
-          "css-url-rewriter-ex": "npm:css-url-rewriter-ex@1.0.4",
-          "css-asset-copier": "npm:css-asset-copier@1.0.1"
         }
       },
       "github:jspm/nodelibs-url@0.1.0": {
@@ -337,6 +323,20 @@ SystemJS.config({
       "npm:systemjs-hot-reloader-ex@2.0.0": {
         "map": {
           "core-js": "npm:core-js@2.4.1"
+        }
+      },
+      "github:sormy/plugin-sass@master": {
+        "map": {
+          "css-asset-copier": "npm:css-asset-copier@1.0.1",
+          "lodash": "npm:lodash@4.16.4",
+          "css-url-rewriter-ex": "npm:css-url-rewriter-ex@1.0.4",
+          "autoprefixer": "npm:autoprefixer@6.5.1",
+          "sass.js": "npm:sass.js@0.9.13",
+          "postcss": "npm:postcss@5.2.4",
+          "path": "github:jspm/nodelibs-path@0.1.0",
+          "fs": "github:jspm/nodelibs-fs@0.1.2",
+          "url": "github:jspm/nodelibs-url@0.1.0",
+          "reqwest": "github:ded/reqwest@2.0.5"
         }
       }
     }
