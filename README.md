@@ -14,6 +14,35 @@
 - javascript hot reload
 - production build with minification and asset bundling
 
+## Tests ##
+
+Run `npm start` before testing:
+
+- Modify `src/Counter.jsx` and see immediate change propagation and state will
+  remain the same (counter number).
+- Modify `src/Counter.jsx` with bad JS/JSX syntax. You will see error in console
+  and application state will be reverted. Once you will fix issue page will hot
+  reloaded. So it's "coding on the fly" friendly.
+- Modify `src/bootstrap/_variables.scss` and set `$brand-primary` to another
+  value. `bs-systemjs-hot-reloader` will handle change and will find parent
+  module `src/bootstrap/bootstrap.scss` and will reload it. It should take
+  around 3 secs.
+- Remove `__reload` hook from `src/index.jsx` and hot reload will still works
+  but React application state will not be preserved.
+- Modify `index.css`, for example, `margin` for `body` and you will see that
+  changes were immediately propagated to browser.
+- Check that Font Awesome icon is visible on the page. That means that css url
+  rewrite works well.
+- Check that Open Sans font is used as default. That means that css url
+  rewrite works well. Also it means that bootstrap 4.x configuration works well.
+
+Run `npm run serve` to check how production build will work:
+
+- You should see Font Awesome icon, Open Sans and red Bootstrap button.
+- All CSS assets should be in `dist`.
+- Production index.html should be in `dist`.
+- Minified application bundle `app.js` should be in `dist`.
+
 ## TODO ##
 
 - plugin-scss
