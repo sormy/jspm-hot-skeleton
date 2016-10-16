@@ -1,7 +1,7 @@
 var browserSync = require('browser-sync');
 var bsSystemHotReloader = require('bs-systemjs-hot-reloader');
 
-var bsConfig = require('./serve.config');
+var bsConfig = require('./bs.config');
 
 var bs = browserSync.create();
 

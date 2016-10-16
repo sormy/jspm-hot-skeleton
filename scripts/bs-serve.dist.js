@@ -1,6 +1,6 @@
 var browserSync = require('browser-sync');
 
-var bsConfig = require('./serve.config');
+var bsConfig = require('./bs.config');
 
 var bs = browserSync.create();
 
