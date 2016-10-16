@@ -45,6 +45,8 @@ Run `npm run serve` to check how production build will work:
 
 ## TODO ##
 
+- currently it depends from `github:sormy/plugin-sass@master` package but
+  it should be fixed once PR will be merged in upstread `plugin-sass`
 - plugin-scss
   - source maps
   - cdn
