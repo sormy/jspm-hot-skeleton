@@ -25,7 +25,21 @@ SystemJS.config({
   sassPluginOptions: {
     "copyAssets": true,
     "rewriteUrl": true,
-    "autoprefixer": true
+    "autoprefixer": {
+      "browsers": [
+        // Official browser support policy:
+        // http://v4-alpha.getbootstrap.com/getting-started/browsers-devices/#supported-browsers
+        'Chrome >= 35',
+        'Firefox >= 38',
+        'Edge >= 12',
+        'Explorer >= 9',
+        'iOS >= 8',
+        'Safari >= 8',
+        'Android 2.3',
+        'Android >= 4',
+        'Opera >= 12'
+      ]
+    }
   },
   transpiler: "plugin-babel",
   packages: {
