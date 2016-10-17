@@ -1,5 +1,5 @@
 {
-  "name": "skeleton-jspm-hot",
+  "name": "jspm-hot-skeleton",
   "version": "1.0.0",
   "description": "JSPM skeleton featuring JSPM, SystemJS, BrowserSync, Hot Reload (CSS/JS), SCSS, CSS, React, Bootstrap 4.x, Font Awesome, Open Sans, Development/Production Build, CSS URL Rewrite, CSS Asset Bundler",
   "main": "src/index.js",
