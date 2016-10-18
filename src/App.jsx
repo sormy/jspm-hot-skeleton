@@ -12,8 +12,14 @@ export default class App extends React.Component {
           Font Awesome: <i className="fa fa-fort-awesome" aria-hidden="true"></i>
         </div>
         <div>
-          <button className="btn btn-primary">Bootstrap Primary Button</button>
-          (should be red if theme overrides are working well)
+          <button
+            className="btn btn-primary"
+            data-toggle="tooltip"
+            title="If you see fancy Bootstrap tooltip than Bootstrap JS part works well"
+          >
+            Bootstrap Primary Button
+          </button>
+          (should be red if theme overrides are working well + should have fancy tooltip)
         </div>
         <div>
           Stateful component: <Counter />

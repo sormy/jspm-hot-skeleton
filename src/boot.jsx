@@ -9,3 +9,9 @@ import 'open-sans/open-sans.scss';
 // import 'bootstrap/dist/css/bootstrap.css';
 import './bootstrap/bootstrap.scss';
 import './bootstrap/bootstrap';
+
+// initialize bootstrap tooltips
+$(() => {
+  $.fn.tooltip.Constructor.Default.placement = 'bottom';
+  $('[data-toggle="tooltip"]').tooltip();
+});
