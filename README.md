@@ -42,11 +42,20 @@ Run `npm run serve` to check how production build will work:
 - All CSS assets should be in `dist`.
 - Production index.html should be in `dist`.
 - Minified application bundle `app.js` should be in `dist`.
+- Source maps should be on the side in `app.js.map`
+
+Run `npm run serve:dev` to check how development build will work:
+
+- You should see Font Awesome icon, Open Sans and red Bootstrap button.
+- All CSS assets should be in `dist`.
+- Production index.html should be in `dist`.
+- Non minified application bundle `app.js` should be in `dist`.
+- Source maps should be on the side in `app.js.map`
 
 ## TODO ##
 
 - currently it depends from `github:sormy/plugin-sass@master` package but
-  it should be fixed once PR will be merged in upstread `plugin-sass`
+  it should be fixed once PR will be merged in upstream `plugin-sass`
 - plugin-scss
   - source maps
   - cdn
@@ -57,8 +66,10 @@ Run `npm run serve` to check how production build will work:
 - systemjs-hot-reloader: fix todo
 - css-url-rewriter-ex: fix todo
 - asset hot reload
-- babel-plugin
-  - fix generation of bundle without minification
+- systemjs-builder
+  - rollup breakes source maps
+  - jspm_packages files don't have correct source content in source maps
+  - no way to pass options to internal babel compiler, like `"compact": false`
 
 ## From Scratch ##
 
