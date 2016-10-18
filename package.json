@@ -182,7 +182,7 @@
   },
   "devDependencies": {
     "browser-sync": "^2.17.3",
-    "bs-systemjs-hot-reloader": "^1.0.3",
+    "bs-systemjs-hot-reloader": "^1.0.4",
     "jspm": "^0.17.0-beta.29"
   },
   "scripts": {
