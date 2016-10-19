@@ -54,7 +54,6 @@ Run `npm run serve:dev` to check how development build will work:
 
 ## TODO ##
 
-- replace `rm -rf` with `rimraf`, `cp` with `cp-cli`
 - currently it depends from `github:sormy/plugin-sass@master` package but
   it should be fixed once PR will be merged in upstream `plugin-sass`
 - plugin-scss

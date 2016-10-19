@@ -183,16 +183,18 @@
   "devDependencies": {
     "browser-sync": "^2.17.3",
     "bs-systemjs-hot-reloader": "^1.0.4",
-    "jspm": "^0.17.0-beta.29"
+    "cp-cli": "^1.0.2",
+    "jspm": "^0.17.0-beta.29",
+    "rimraf": "^2.5.4"
   },
   "scripts": {
-    "clean": "rm -rf dist && mkdir dist",
+    "clean": "rimraf dist && mkdir dist",
     "build": "npm run build:prod",
     "build:dev": "npm run clean && npm run build:jspm:dev && npm run build:index",
     "build:prod": "npm run clean && npm run build:jspm:prod && npm run build:index",
     "build:jspm:dev": "jspm build app dist/app.js --format global --source-map-contents --skip-rollup",
     "build:jspm:prod": "jspm build app dist/app.js --format global --minify --source-map-contents --skip-rollup",
-    "build:index": "cp -f index.dist.html dist/index.html",
+    "build:index": "cp-cli index.dist.html dist/index.html",
     "serve": "npm run serve:prod",
     "serve:dev": "npm run build:dev && node scripts/bs-serve.dist.js",
     "serve:prod": "npm run build:prod && node scripts/bs-serve.dist.js",
