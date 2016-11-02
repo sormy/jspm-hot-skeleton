@@ -35,6 +35,7 @@ Run `npm start` before testing:
   rewrite works well.
 - Check that Open Sans font is used as default. That means that css url
   rewrite works well. Also it means that bootstrap 4.x configuration works well.
+- FontAwesome scss source map for icon unicode characters doesn't work well.
 
 Run `npm run serve` to check how production build will work:
 
@@ -52,10 +53,45 @@ Run `npm run serve:dev` to check how development build will work:
 - Non minified application bundle `app.js` should be in `dist`.
 - Source maps should be on the side in `app.js.map`
 
+## SCSS/SASS ##
+
+`plugin-sass` requires Babel transpiler.
+
+```shell
+jspm install plugin-sass=github:mobilexag/plugin-sass --dev
+```
+
+```javascript
+SystemJS.config({
+  meta: {
+    "*.scss": {
+      "loader": "plugin-sass"
+    }
+  },
+  transpiler: "plugin-babel",
+  separateCSS: true,
+  sassPluginOptions: {
+    "copyAssets": true,
+    "rewriteUrl": true,
+    "autoprefixer": {
+      "browsers": [
+        "Chrome >= 35",
+        "Firefox >= 38",
+        "Edge >= 12",
+        "Explorer >= 9",
+        "iOS >= 8",
+        "Safari >= 8",
+        "Android 2.3",
+        "Android >= 4",
+        "Opera >= 12"
+      ]
+    }
+  },
+});
+```
+
 ## TODO ##
 
-- currently it depends from `github:sormy/plugin-sass@master` package but
-  it should be fixed once PR will be merged in upstream `plugin-sass`
 - plugin-scss
   - source maps
   - cdn

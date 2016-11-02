@@ -9,7 +9,7 @@ export default class App extends React.Component {
         <div>Hello, World!</div>
         <div>Open Sans Font</div>
         <div>
-          Font Awesome: <i className="fa fa-fort-awesome" aria-hidden="true"></i>
+          Font Awesome: <i className="fa fa-font-awesome" aria-hidden="true"></i>
         </div>
         <div>
           <button
