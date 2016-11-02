@@ -55,11 +55,16 @@ Run `npm run serve:dev` to check how development build will work:
 
 ## SCSS/SASS ##
 
-`plugin-sass` requires Babel transpiler.
+Package `plugin-sass` requires Babel transpiler.
+
+Install sass:
 
 ```shell
 jspm install plugin-sass=github:mobilexag/plugin-sass --dev
 ```
+
+Activate SASS for `*.scss` and enable autoprefixer for Bootstrap 4.x, asset bundler
+and css url rewriter, separate css from js:
 
 ```javascript
 SystemJS.config({
